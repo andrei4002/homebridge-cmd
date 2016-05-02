@@ -42,7 +42,7 @@ CmdAccessory.prototype = {
 					callback('OFF');
 				}
 			}
-		});
+		}).bind(this);
 	},
 
 	setPowerState: function(powerOn, callback) {
@@ -89,7 +89,7 @@ CmdAccessory.prototype = {
 		switchService
 			.getCharacteristic(Characteristic.On)
 			.on('set', this.setPowerState.bind(this))
-			.on('get', this.setPowerState.bind(this));
+			.on('get', this.getPowerState.bind(this));
 
 		return [switchService];
 	}
