@@ -42,7 +42,7 @@ CmdAccessory.prototype = {
 					callback('OFF');
 				}
 			}
-		}).bind(this);
+		}.bind(this));
 	},
 
 	setPowerState: function(powerOn, callback) {
