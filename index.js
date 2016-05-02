@@ -28,18 +28,18 @@ CmdAccessory.prototype = {
 	
 	getPowerState: function(callback) {
 		if (!this.status_cmd) {
-			callback('OFF');
+			callback(null, false);
 			return;
 		}
 		
 		this.cmdRequest(this.status_cmd, function(error, stdout, stderr) {
-			if (err) {
-				callback('OFF');
+			if (error) {
+				callback(null, false);
 			} else {
-				if (stdout == 'ON') {
-					callback('ON');
+				if (stdout.trim() == 'ON') {
+					callback(null, true);
 				} else {
-					callback('OFF');
+					callback(null, false);
 				}
 			}
 		}.bind(this));
