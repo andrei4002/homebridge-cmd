@@ -4,7 +4,7 @@ var exec = require("child_process").exec;
 module.exports = function(homebridge){
   Service = homebridge.hap.Service;
   Characteristic = homebridge.hap.Characteristic;
-  homebridge.registerAccessory("homebridge-cmd", "CMD", CmdAccessory);
+  homebridge.registerAccessory("homebridge-cmd-status", "CMD_STATUS", CmdAccessory);
 }
 
 
@@ -14,6 +14,7 @@ function CmdAccessory(log, config) {
 	// url info
 	this.on_cmd   = config["on_cmd"];
 	this.off_cmd  = config["off_cmd"];
+	this.status_cmd = config["status_cmd"];
 	this.name = config["name"];
 }
 
@@ -23,6 +24,25 @@ CmdAccessory.prototype = {
 		exec(cmd,function(error, stdout, stderr) {
 				callback(error, stdout, stderr)
 			})
+	},
+	
+	getPowerState: function(callback) {
+		if (!this.status_cmd) {
+			callback('OFF');
+			return;
+		}
+		
+		this.cmdRequest(this.status_cmd, function(error, stdout, stderr) {
+			if (err) {
+				callback('OFF');
+			} else {
+				if (stdout == 'ON') {
+					callback('ON');
+				} else {
+					callback('OFF');
+				}
+			}
+		});
 	},
 
 	setPowerState: function(powerOn, callback) {
@@ -68,7 +88,8 @@ CmdAccessory.prototype = {
 
 		switchService
 			.getCharacteristic(Characteristic.On)
-			.on('set', this.setPowerState.bind(this));
+			.on('set', this.setPowerState.bind(this))
+			.on('get', this.setPowerState.bind(this));
 
 		return [switchService];
 	}
